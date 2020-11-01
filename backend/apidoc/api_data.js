@@ -91,10 +91,10 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/auth",
+    "url": "/register",
     "title": "Request to resgister a user",
-    "name": "PostAuth",
-    "group": "Auth",
+    "name": "PostRegister",
+    "group": "Register",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -191,6 +191,6 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "routes/register.js",
-    "groupTitle": "Auth"
+    "groupTitle": "Register"
   }
 ] });

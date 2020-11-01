@@ -5,6 +5,7 @@
     "title": "Com Chat API Doc",
     "url" : "http://comchat-backend.herokuapp.com",
     "order": [
+      "Register",
       "Auth"
     ]
   }
