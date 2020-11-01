@@ -18,7 +18,7 @@ const bodyParser = require("body-parser")
 router.use(bodyParser.json())
 
 /**
- * @api {post} /register Request to resgister a user
+ * @api {post} /auth Request to resgister a user
  * @apiName PostAuth
  * @apiGroup Auth
  * 
