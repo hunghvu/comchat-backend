@@ -91,7 +91,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/register",
+    "url": "/auth",
     "title": "Request to resgister a user",
     "name": "PostAuth",
     "group": "Auth",
