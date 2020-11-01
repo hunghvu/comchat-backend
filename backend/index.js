@@ -33,10 +33,7 @@ app.use(function(err, req, res, next) {
 app.get("/", (request, response) => {
     //this is a Web page so set the content-type to HTML
     response.writeHead(200, {'Content-Type': 'text/html'});
-    for (i = 1; i < 7; i++) {
-        //write a response to the client
-        response.write('<h' + i + ' style="color:blue">Hello World!</h' + i + '>'); 
-    }
+    response.write('<h' + 1 + ' style="color:green">This is Com Chat!</h' + 1 + '>'); 
     response.end(); //end the response
 });
 
