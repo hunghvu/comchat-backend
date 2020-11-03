@@ -11,9 +11,12 @@ let getHash = require('../utilities/utils').getHash
 
 let sendEmail = require('../utilities/utils').sendEmail
 
+let checkPassword = require('../utilities/utils').checkPassword
+
 var router = express.Router()
 
 const bodyParser = require("body-parser")
+const { response } = require('express')
 //This allows parsing of the body of POST requests, that are encoded in JSON
 router.use(bodyParser.json())
 
@@ -29,6 +32,8 @@ router.use(bodyParser.json())
  * 
  * @apiSuccess (Success 201) {boolean} success true when the name is inserted
  * @apiSuccess (Success 201) {String} email the email of the user inserted 
+ * 
+ * @apiError (400: Invalid password) {String} message "Invalid password, password must has at least 6 characters and 1 uppercase letter!"
  * 
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * 
@@ -47,9 +52,17 @@ router.post('/', (req, res) => {
     var username = req.body.email //username not required for lab. Use email
     var email = req.body.email
     var password = req.body.password
+
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
-    if(first && last && username && email && password) {
+    if(first && last && username && email && password) {   
+        //Check if password >= 6 char, has at least 1 uppercase letter A-Z
+        if (!checkPassword(password)) {
+            res.status(400).send({
+                message: "Invalid password, password must has at least 6 characters and 1 uppercase letter!"
+            })
+        }
+        
         //We're storing salted hashes to make our application more secure
         //If you're interested as to what that is, and why we should use it
         //watch this youtube video: https://www.youtube.com/watch?v=8ZtInClXe1Q

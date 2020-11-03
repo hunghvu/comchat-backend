@@ -151,6 +151,15 @@
     },
     "error": {
       "fields": {
+        "400: Invalid password": [
+          {
+            "group": "400: Invalid password",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Invalid password, password must has at least 6 characters and 1 uppercase letter!&quot;</p>"
+          }
+        ],
         "400: Missing Parameters": [
           {
             "group": "400: Missing Parameters",

@@ -5,6 +5,16 @@ let pool = require('./sql_conn.js')
 //We use this create the SHA256 hash
 const crypto = require("crypto");
 
+// A function to check whether the password is valid
+function checkPassword(password) {
+    var result = false;
+    for (i = 0; i < password.length; i++) {
+        result = (password.charAt(i)==password.charAt(i).toUpperCase());
+        if (result) break;
+    }
+    return (password.length >= 6) && result;
+}
+
 function sendEmail(from, receiver, subj, message) {
  //research nodemailer for sending email from node.
  // https://nodemailer.com/about/
@@ -28,5 +38,5 @@ function getHash(pw, salt) {
 }
 
 module.exports = {
- pool, getHash, sendEmail
+ pool, getHash, sendEmail, checkPassword
 }; 
