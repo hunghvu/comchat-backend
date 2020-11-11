@@ -30,8 +30,8 @@ router.use(bodyParser.json())
  * @apiParam {String} email a users email *required unique
  * @apiParam {String} password a users password
  * 
- * @apiSuccess (Success 201) {boolean} success true when the name is inserted
- * @apiSuccess (Success 201) {String} email the email of the user inserted 
+ * @apiSuccess (Success 200) {boolean} success true when the name is inserted
+ * @apiSuccess (Success 200) {String} email the email of the user inserted 
  * 
  * @apiError (400: Invalid password) {String} message "Invalid password, password must has at least 6 characters and 1 uppercase letter!"
  * 
@@ -76,7 +76,7 @@ router.post('/', (req, res) => {
         pool.query(theQuery, values)
             .then(result => {
                 //We successfully added the user, let the user know
-                res.status(201).send({
+                res.status(200).send({
                     success: true,
                     email: result.rows[0].email
                 })

@@ -11,7 +11,9 @@ app.use(bodyParser.json())
 
 app.use('/register', require('./routes/register.js')) 
 
-app.use('/auth', require('./routes/login.js')) 
+app.use('/auth', require('./routes/login.js'))
+
+app.use('/weather', require('./routes/weather.js'))
 
 /*
  * This middleware function will respond to inproperly formed JSON in 
