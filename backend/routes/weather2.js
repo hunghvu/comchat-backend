@@ -1,16 +1,15 @@
-const app_id = process.env.WEATHER_API_KEY;
+const app_id = process.env.WEATHER_APP_ID;
+const consumer_key = process.env.WEATHER_CONSUMER_KEY;
+const consumer_secret = process.env.WEATHER_SECRET_KEY;
 
 
 //express is the framework we're going to use to handle requests
 const express = require('express')
 
-//request module is needed to make a request to a web service
-const request = require('request')
+const OAuth = require('oauth');
 
 //zipcode module is to get long and latitude from zipcode
 const zipcodes = require('zipcodes');
-
-let getDate = require('../utilities/utils').getDate
 
 //request module is needed to make a request to a web service
 //const request = require('request')
@@ -43,11 +42,13 @@ router.get("/", (req, res) => {
     }
 
     // Process the zip code and add lon and lat param to the url
-    var url = 'https://api.openweathermap.org/data/2.5/onecall'
-    var query = {lat: '', lon: '',exclude: ['minutely','alerts'], units: 'imperial', appid: app_id};
+    console.log(req.decoded)
+    var url = 'https://weather-ydn-yql.media.yahoo.com/forecastrss'
+    var query = {lat: '', lon: '',format: 'json'};
     var param = zipcodes.lookup(req.query.zip)
     query.lat = param.latitude
     query.lon = param.longitude
+    console.log(query)
 
     //Change query into parameters
     var str = [];
@@ -56,29 +57,43 @@ router.get("/", (req, res) => {
           str.push(encodeURIComponent(p) + "=" + encodeURIComponent(query[p]));
         }
     str = str.join("&");
+    console.log(str)
     url += '?' + str
+    console.log(url)
 
-    //When this web service gets a request, make a request to the Phish Web service
-    request(url, function (error, response, body) {
-        if (error) {
-            res.send(error)
-        } else {
-            let resp = response.body
-            resp = JSON.parse(resp)
-            let offset = resp.timezone_offset
-            
-            resp.current.dt = getDate((resp.current.dt - offset)*1000)
-            for (i in resp.hourly) {
-              resp.hourly[i].dt = getDate((resp.hourly[i].dt - offset)*1000)
-            }
+    // Require node-oauth package: npm install oauth
+    // Copyright 2019 Oath Inc. Licensed under the terms of the zLib license see https://opensource.org/licenses/Zlib for terms.
+    var header = {
+        "X-Yahoo-App-Id": app_id
+    };
+    var request = new OAuth.OAuth(
+        null,
+        null,
+        consumer_key,
+        consumer_secret,
+        '1.0',
+        null,
+        'HMAC-SHA1',
+        null,
+        header
+    );
 
-            for (i in resp.daily) {
-              resp.daily[i].dt = getDate((resp.daily[i].dt - offset)*1000)
-            }
+    //When this web service gets a request, make a request to the Yahoo Weather Web service
+    request.get(
+      url,
+      null,
+      null,
+      function (err, data, result) {
+          if (err) {
+            res.send(err)
+          } else {
+            //var n = body.indexOf("{")
+            //var nakidBody = body.substring(n - 1)
+            res.send(data)
+          }
+      }
+  );
 
-            res.send(resp);
-        }
-    })
 })
 
 module.exports = router

@@ -15,6 +15,19 @@ function checkPassword(password) {
     return (password.length >= 6) && result;
 }
 
+// A function to return date object with unix timestamp
+function getDate(unix) {
+  let date = new Date(unix)  
+  var hour = date.getHours();
+  var minute = date.getMinutes();
+  var ampm = hour >= 12 ? 'pm' : 'am';
+  hour = hour % 12;
+  hour = hour ? hour : 12; // the hour '0' should be '12'
+  minute = minute < 10 ? '0'+minute : minute;
+  return JSON.stringify({days: date.getDay(), dates: date.getDate(), months: date.getMonth(), years: date.getFullYear(), hours: hour, minutes: minute, ampms: ampm})
+
+}
+
 function sendEmail(from, receiver, subj, message) {
  //research nodemailer for sending email from node.
  // https://nodemailer.com/about/
@@ -38,5 +51,5 @@ function getHash(pw, salt) {
 }
 
 module.exports = {
- pool, getHash, sendEmail, checkPassword
+ pool, getHash, sendEmail, checkPassword, getDate
 }; 
