@@ -65,14 +65,15 @@ router.get("/", (req, res) => {
         } else {
             let resp = response.body
             resp = JSON.parse(resp)
+            let offset = resp.timezone_offset
             
-            resp.current.dt = getDate((resp.current.dt)*1000)
+            resp.current.dt = getDate((resp.current.dt + offset)*1000)
             for (i in resp.hourly) {
-              resp.hourly[i].dt = getDate((resp.hourly[i].dt)*1000)
+              resp.hourly[i].dt = getDate((resp.hourly[i].dt + offset)*1000)
             }
 
             for (i in resp.daily) {
-              resp.daily[i].dt = getDate((resp.daily[i].dt)*1000)
+              resp.daily[i].dt = getDate((resp.daily[i].dt + offset)*1000)
             }
 
             res.send(resp);
