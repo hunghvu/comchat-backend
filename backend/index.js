@@ -13,7 +13,7 @@ app.use('/register', require('./routes/register.js'))
 
 app.use('/auth', require('./routes/login.js'))
 
-app.use('/weather', middleware.checkToken, require('./routes/weather.js'))
+app.use('/weather', require('./routes/weather.js'))
 
 app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
 

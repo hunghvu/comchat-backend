@@ -74,6 +74,7 @@ router.get("/", (req, res) => {
 
             for (i in resp.daily) {
               resp.daily[i].dt = getDate((resp.daily[i].dt + offset)*1000)
+              console.log(typeof(resp.daily[i].dt))
             }
 
             res.send(resp);

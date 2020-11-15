@@ -24,7 +24,7 @@ function getDate(unix) {
   hour = hour % 12;
   hour = hour ? hour : 12; // the hour '0' should be '12'
   minute = minute < 10 ? '0'+minute : minute;
-  return JSON.stringify({days: date.getDay(), dates: date.getDate(), months: date.getMonth()+1, years: date.getFullYear(), hours: hour, minutes: minute, ampms: ampm})
+  return JSON.parse(JSON.stringify({days: date.getDay(), dates: date.getDate(), months: date.getMonth()+1, years: date.getFullYear(), hours: hour, minutes: minute, ampms: ampm}))
 
 }
 
