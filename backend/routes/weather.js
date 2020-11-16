@@ -74,8 +74,11 @@ router.get("/", (req, res) => {
 
             for (i in resp.daily) {
               resp.daily[i].dt = getDate((resp.daily[i].dt + offset)*1000)
-              console.log(typeof(resp.daily[i].dt))
             }
+
+            resp.City = param.city
+            resp.State = param.state
+            resp.Country = param.country
 
             res.send(resp);
         }
