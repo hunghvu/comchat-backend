@@ -35,6 +35,8 @@ let config = {
  * 
  * @apiError (400: Invalid Credentials) {String} message "Credentials did not match"
  * 
+ * @apiError (400: Unverified user) {String} message "user has not been verified"
+ * 
  * @apiError (400: SQL Error) {String} message the reported SQL error details
  */ 
 router.get('/', (request, response) => {
@@ -47,7 +49,7 @@ router.get('/', (request, response) => {
     const [email, theirPw] = credentials.split(':')
 
     if(email && theirPw) {
-        let theQuery = "SELECT Password, Salt, MemberId FROM Members WHERE Email=$1"
+        let theQuery = "SELECT Password, Salt, MemberId, Verification FROM Members WHERE Email=$1"
         let values = [email]
         pool.query(theQuery, values)
             .then(result => { 
@@ -66,23 +68,30 @@ router.get('/', (request, response) => {
 
                 //Did our salted hash match their salted hash?
                 if (ourSaltedHash === theirSaltedHash ) {
-                    //credentials match. get a new JWT
-                    let token = jwt.sign(
-                        {
-                            "email": email,
-                            memberid: result.rows[0].memberid
-                        },
-                        config.secret,
-                        { 
-                            expiresIn: '365 days' // expires in 14 days
-                        }
-                    )
-                    //package and send the results
-                    response.json({
-                        success: true,
-                        message: 'Authentication successful!',
-                        token: token
-                    })
+                    if (result.rows[0].verification == 1) {
+                        //credentials match. get a new JWT
+                        let token = jwt.sign(
+                            {
+                                "email": email,
+                                memberid: result.rows[0].memberid
+                            },
+                            config.secret,
+                            { 
+                                expiresIn: '365 days' // expires in 14 days
+                            }
+                        )
+                        //package and send the results
+                        response.json({
+                            success: true,
+                            message: 'Authentication successful!',
+                            token: token
+                        })
+                    } else {
+                            //user has not been verified
+                            response.status(400).send({
+                            message: 'User is not verified' 
+                        }) 
+                    }
                 } else {
                     //credentials dod not match
                     response.status(400).send({

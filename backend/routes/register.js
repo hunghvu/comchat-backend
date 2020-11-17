@@ -17,8 +17,11 @@ var router = express.Router()
 
 const bodyParser = require("body-parser")
 const { response } = require('express')
+const { Console } = require('console')
 //This allows parsing of the body of POST requests, that are encoded in JSON
 router.use(bodyParser.json())
+
+var mailOptions,host,link;
 
 /**
  * @api {post} /register Request to resgister a user
@@ -43,7 +46,7 @@ router.use(bodyParser.json())
  * 
  * @apiError (400: SQL Error) {String} message the reported SQL error details
  */ 
-router.post('/', (req, res) => {
+router.post('/', (req, res, next) => {
     res.type("application/json")
 
     //Retrieve data from query params
@@ -71,8 +74,9 @@ router.post('/', (req, res) => {
         
         //We're using placeholders ($1, $2, $3) in the SQL query string to avoid SQL Injection
         //If you want to read more: https://stackoverflow.com/a/8265319
-        let theQuery = "INSERT INTO MEMBERS(FirstName, LastName, Username, Email, Password, Salt) VALUES ($1, $2, $3, $4, $5, $6) RETURNING Email"
-        let values = [first, last, username, email, salted_hash, salt]
+        let theQuery = "INSERT INTO MEMBERS(FirstName, LastName, Username, Email, Password, Salt, Code) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING Email"
+        let rand = Math.floor((Math.random() * 100) + 54)
+        let values = [first, last, username.toLowerCase(), email.toLowerCase(), salted_hash, salt, rand]
         pool.query(theQuery, values)
             .then(result => {
                 //We successfully added the user, let the user know
@@ -80,7 +84,7 @@ router.post('/', (req, res) => {
                     success: true,
                     email: result.rows[0].email
                 })
-                sendEmail("uwnetid@uw.edu", email, "Welcome!", "<strong>Welcome to our app!</strong>");
+                next()
             })
             .catch((err) => {
                 //log the error
@@ -104,6 +108,54 @@ router.post('/', (req, res) => {
             message: "Missing required information"
         })
     }
+}, (req, res) => {
+    let theQuery = "SELECT Code FROM Members WHERE Email=$1"
+    let values = [(req.body.email).toLowerCase()]
+    pool.query(theQuery, values)
+        .then(result => {
+            host=req.get('host');
+            link="http://"+req.get('host')+"/register/verify?id="+result.rows[0].code;
+            mailOptions={
+                to : (req.body.email).toLowerCase(),
+                subject : "Please confirm your Com Chat Email account",
+                html : "Hello,<br> Please Click on the link to verify your Com Chat email.<br><a href="+link+">Click here to verify</a>" 
+            }   
+            sendEmail(mailOptions);
+        })
 })
+
+
+router.get('/verify',function(req,res){
+    console.log(req.protocol+":/"+req.get('host'));
+    if((req.protocol+"://"+req.get('host'))==("http://"+host))
+    {
+        console.log("Domain is matched. Information is from Authentic email")
+        let theQuery = "UPDATE Members SET Verification=1 WHERE Email=$1 RETURNING Code"
+        let values = [mailOptions.to]
+
+        //Change verification value in Members of the email to 1
+        pool.query(theQuery, values)
+            .then(result =>{
+                if(result.rows[0].code==req.query.id) {
+                    console.log("email is verified")
+                    res.end("<h1>Email "+mailOptions.to+" has been successfully verified")
+                    
+                    //Delete the email verification code
+                    let theQuery = "UPDATE Members SET Code=0 WHERE Email=$1"
+                    pool.query(theQuery, values)
+                }
+                else
+                {
+                    console.log("email is not verified")
+                    res.end("<h1>Bad Request</h1>")
+                }
+        })
+        
+    }
+    else
+    {
+        res.end("<h1>Request is from unknown source")
+    }
+    })
 
 module.exports = router
