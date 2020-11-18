@@ -17,6 +17,8 @@ app.use('/weather', require('./routes/weather.js'))
 
 app.use('/connections', require('./routes/connections.js'))
 
+app.use('/resetpassword', require('./routes/resetpassword.js'))
+
 app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
 
 app.use('/chats', middleware.checkToken, require('./routes/chats.js'))

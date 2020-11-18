@@ -275,11 +275,11 @@ router.get("/getchatid/:email?", (request, response, next) => {
         pool.query(query, values)
             .then(result => {
                 if (result.rowCount == 0) {
-                    response.status(404).send({
+                    response.status(400).send({
                         message: "email not found"
                     })
                 } else if (result.rows[0].verification == 0) {
-                    response.status(404).send({
+                    response.status(400).send({
                         message: "email has not been verified"
                     })
                 } else {
