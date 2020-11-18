@@ -1,4 +1,4 @@
-const email_pass = process.env.BURNER_EMAIL_PASS;
+const email_pass = process.env.BURNER_PASS;
 
 //Get the connection to Heroku Database
 let pool = require('./sql_conn.js')
@@ -9,9 +9,7 @@ var nodemailer = require('nodemailer');
 const crypto = require("crypto");
 
 var transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
+  service: 'Gmail',
   auth: {
     user: 'phongfly123@gmail.com',
     pass: email_pass
