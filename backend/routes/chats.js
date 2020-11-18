@@ -258,6 +258,69 @@ router.get("/:chatId", (request, response, next) => {
             })
 });
 
+
+router.get("/getchatid/:email?", (request, response, next) => {
+    if (!request.params.email) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    } else {
+        request.params.email = (request.params.email).toLowerCase()
+        next()
+    }
+}, (request, response, next) => {
+        //validate email exists 
+        let query = 'SELECT MemberID, Verification FROM Members WHERE Email=$1'
+        let values = [request.params.email]
+        pool.query(query, values)
+            .then(result => {
+                if (result.rowCount == 0) {
+                    response.status(404).send({
+                        message: "email not found"
+                    })
+                } else if (result.rows[0].verification == 0) {
+                    response.status(404).send({
+                        message: "email has not been verified"
+                    })
+                } else {
+                    //user found
+                    request.memberid = result.rows[0].memberid
+                    next()
+                }
+            }).catch(error => {
+                response.status(400).send({
+                    message: "SQL Error",
+                    error: error
+                })
+            })
+    }, (request, response) => {
+        //validate email does not already exist in the contact
+        let query = `SELECT ChatID
+                    FROM ChatMembers
+                    WHERE MemberID=$1`
+        let values = [request.memberid]
+    
+        pool.query(query, values)
+            .then(result => {
+                if (result.rowCount == 0) {
+                    response.status(400).send({
+                        message: "user has no contact"
+                    })
+                } else {
+                    response.send({
+                        contactCount : result.rowCount,
+                        contacts: result.rows
+                    })
+                }
+            }).catch(error => {
+                response.status(400).send({
+                    message: "SQL Error",
+                    error: error
+                })
+            })
+    })
+
+
 /**
  * @api {delete} /chats/:chatId?/:email? Request delete a user from a chat
  * @apiName DeleteChats

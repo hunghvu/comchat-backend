@@ -115,6 +115,7 @@ router.post('/', (req, res, next) => {
         .then(result => {
             host=req.get('host');
             link="http://"+req.get('host')+"/register/verify?id="+result.rows[0].code;
+            console.log(req)
             mailOptions={
                 to : (req.body.email).toLowerCase(),
                 subject : "Please confirm your Com Chat Email account",
