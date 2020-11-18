@@ -19,7 +19,6 @@ router.get("/:email?", (request, response, next) => {
     //validate email exists 
     let query = 'SELECT MemberID, Verification FROM Members WHERE Email=$1'
     let values = [request.params.email]
-    console.log(request.params.email)
     pool.query(query, values)
         .then(result => {
             if (result.rowCount == 0) {
@@ -32,11 +31,10 @@ router.get("/:email?", (request, response, next) => {
                 })
             } else {
                 //user found
-                request.memberId = result.rows[0].memberid
+                request.memberid = result.rows[0].memberid
                 next()
             }
         }).catch(error => {
-            console.log('here')
             response.status(400).send({
                 message: "SQL Error",
                 error: error
@@ -154,7 +152,6 @@ router.post("/", (request, response, next) => {
                   VALUES ($1, $2)
                   RETURNING *`
     let values = [request.memberId_A, request.memberId_B]
-    console.log(values)
     pool.query(insert, values)
         .then(result => {
             response.send({
@@ -256,7 +253,6 @@ router.delete("/", (request, response, next) => {
                   AND MemberID_B=$2
                   RETURNING *`
     let values = [request.memberId_A, request.memberId_B]
-    console.log(values)
     pool.query(insert, values)
         .then(result => {
             response.send({
