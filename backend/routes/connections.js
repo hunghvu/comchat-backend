@@ -42,7 +42,7 @@ router.get("/:email?", (request, response, next) => {
         })
 }, (request, response) => {
     //validate email does not already exist in the contact
-    let query = `SELECT Members.Email
+    let query = `SELECT Members.MemberID 
                 FROM Contacts
                 INNER JOIN Members ON Contacts.MemberId_B=Members.MemberId
                 WHERE MemberID_A=$1`

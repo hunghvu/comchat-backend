@@ -21,8 +21,6 @@ const { Console } = require('console')
 //This allows parsing of the body of POST requests, that are encoded in JSON
 router.use(bodyParser.json())
 
-var mailOptions,host,link;
-
 /**
  * @api {post} /register Request to resgister a user
  * @apiName PostRegister
@@ -48,6 +46,9 @@ var mailOptions,host,link;
  */ 
 router.post('/', (req, res, next) => {
     res.type("application/json")
+
+    //Change email to lower case
+    req.body.email = (req.body.email).toLowerCase()
 
     //Retrieve data from query params
     var first = req.body.first
@@ -76,7 +77,7 @@ router.post('/', (req, res, next) => {
         //If you want to read more: https://stackoverflow.com/a/8265319
         let theQuery = "INSERT INTO MEMBERS(FirstName, LastName, Username, Email, Password, Salt, Code) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING Email"
         let rand = Math.floor((Math.random() * 100) + 54)
-        let values = [first, last, username.toLowerCase(), email.toLowerCase(), salted_hash, salt, rand]
+        let values = [first, last, username, email, salted_hash, salt, rand]
         pool.query(theQuery, values)
             .then(result => {
                 //We successfully added the user, let the user know
@@ -110,11 +111,11 @@ router.post('/', (req, res, next) => {
     }
 }, (req, res) => {
     let theQuery = "SELECT Code FROM Members WHERE Email=$1"
-    let values = [(req.body.email).toLowerCase()]
+    let values = [req.body.email]
     pool.query(theQuery, values)
         .then(result => {
             host=req.get('host');
-            link="http://"+req.get('host')+"/register/verify?id="+result.rows[0].code;
+            let link="http://"+req.get('host')+"/register/verify?email="+req.body.email+"&pin="+result.rows[0].code;
             mailOptions={
                 to : (req.body.email).toLowerCase(),
                 subject : "Please confirm your Com Chat Email account",
@@ -125,36 +126,69 @@ router.post('/', (req, res, next) => {
 })
 
 
-router.get('/verify',function(req,res){
-    if((req.protocol+"://"+req.get('host'))==("http://"+host))
-    {
-        console.log("Domain is matched. Information is from Authentic email")
-        let theQuery = "UPDATE Members SET Verification=1 WHERE Email=$1 RETURNING Code"
-        let values = [mailOptions.to]
-
-        //Change verification value in Members of the email to 1
-        pool.query(theQuery, values)
-            .then(result =>{
-                if(result.rows[0].code==req.query.id) {
-                    console.log("email is verified")
-                    res.end("<h1>Email "+mailOptions.to+" has been successfully verified")
-                    
-                    //Delete the email verification code
-                    let theQuery = "UPDATE Members SET Code=0 WHERE Email=$1"
-                    pool.query(theQuery, values)
-                }
-                else
-                {
-                    console.log("email is not verified")
-                    res.end("<h1>Bad Request</h1>")
-                }
+router.get('/verify', (request, response, next) => {
+    //validate on missing or invalid (type) parameters
+    if (!request.query.email || !request.query.pin) {
+        response.status(400).send({
+            message: "Missing required information"
         })
-        
+    } else {
+        request.query.email = (request.query.email).toLowerCase()
+        next()
     }
-    else
-    {
-        res.end("<h1>Request is from unknown source")
-    }
+}, (request, response, next) => {
+        //validate email exists 
+        let query = 'SELECT MemberID FROM Members WHERE Email=$1'
+        let values = [request.query.email]
+        pool.query(query, values)
+            .then(result => {
+                if (result.rowCount == 0) {
+                    response.status(400).send({
+                        message: "email not found"
+                    })
+                } else {
+                    //user found
+                    request.memberid = result.rows[0].memberid
+                    next()
+                }
+            }).catch(error => {
+                response.status(400).send({
+                    message: "SQL Error",
+                    error: error
+                })
+            })
+    }, (request, response, next) => {
+        //Check PIN number
+        let query = 'SELECT Code FROM Members WHERE Email=$1'
+        let values = [request.query.email]
+        pool.query(query, values)
+            .then(result => {
+                if (result.rows[0].code != request.query.pin) {
+                    response.status(404).send({
+                        message: "Bad request"
+                    })
+                } else {
+                    next()
+                }
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+    }, (request, response) => {
+        let query = 'UPDATE Members SET Code=$1,Verification=$2 WHERE MemberID=$3 RETURNING Email'
+        let values = [0 , 1, request.memberid]
+    
+        pool.query(query, values)
+            .then(result => {
+                response.send(result.rows[0].email+" has been successfully verified for Com Chat!</h1>")
+            }).catch(error => {
+                response.status(400).send({
+                    message: "SQL Error",
+                    error: error
+                })
+            })
     })
 
 module.exports = router
