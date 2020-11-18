@@ -132,7 +132,7 @@ router.put('/', (request, response, next) => {
             pool.query(query, values)
                 .then(result => {
                     if (result.rows[0].code != request.query.pin) {
-                        response.status(404).send({
+                        response.status(400).send({
                             message: "Bad request"
                         })
                     } else {
