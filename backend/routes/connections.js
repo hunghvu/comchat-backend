@@ -22,7 +22,6 @@ var router = express.Router()
  * 
  * @apiError (400: Email Not Found) {String} message "Email Not Found"
  * @apiError (400: Email Not Verified) {String} message "Email has not been verified"
- * @apiError (400: No Contacts Found) {String} message "User has no contact" 
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * 
  * @apiError (400: SQL Error) {String} message the reported SQL error details
