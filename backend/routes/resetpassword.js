@@ -17,7 +17,21 @@ var router = express.Router()
 
 
 
-
+/**
+ * @api {get} /resetpassword Request to send a user pin number to reset password
+ * @apiName GetResetPassword
+ * @apiGroup ResetPassword
+ * 
+ * @apiParam {String} email a users email *required unique
+ * 
+ * @apiSuccess (Success 200) {String} success Email with PIN code has been sent
+ * 
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * @apiError (400: Email Not Found) {String} message "Email Not Found"
+ * @apiError (400: Email Not Verified) {String} message "Email has not been verified"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ */ 
 router.get('/:email', (request, response, next) => {
     //validate on missing or invalid (type) parameters
     if (!request.params.email) {
@@ -81,6 +95,26 @@ router.get('/:email', (request, response, next) => {
 
     
 
+
+/**
+ * @api {put} /resetpassword Request to change a user's password
+ * @apiName PutResetPassword
+ * @apiGroup ResetPassword
+ * 
+ * @apiParam {String} email a users email *required unique
+ * @apiParam {String} password a users password
+ * @apiParam {Integer} pin a pin number
+ * 
+ * @apiSuccess (Success 200) {String} success Password of user has been successfully reset 
+ * 
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * @apiError (400: Email Not Found) {String} message "Email Not Found"
+ * @apiError (400: Email Not Verified) {String} message "Email has not been verified"
+ * @apiError (400: Invalid password) {String} message "Invalid password, password must has at least 6 characters and 1 uppercase letter!"
+ * @apiError (404: Pin number does not match) {String} message "Bad request"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ */ 
 router.put('/', (request, response, next) => {
         //validate on missing or invalid (type) parameters
         if (!request.query.email || !request.query.pin || !request.query.password) {

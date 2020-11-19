@@ -259,6 +259,28 @@ router.get("/:chatId", (request, response, next) => {
 });
 
 
+/**
+ * @api {get} /chats/getchatid/:chatId? Request to get the chat IDs of an email
+ * @apiName GetChats
+ * @apiGroup Chats
+ * 
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * 
+ * @apiParam {Number} email the email to look up. 
+ * 
+ * @apiSuccess {Number} rowCount the number of chat IDs returned
+ * @apiSuccess {Object[]} members List of chat IDs where the email is a member of those chats
+ * @apiSuccess {String} messages.chatID The chat IDs for the chats having the email
+ * 
+ * @apiError (400: Email Not Found) {String} message "Email Not Found"
+ * @apiError (400: Email Not Verified) {String} message "Email has not been verified"
+ * @apiError (400: No Contacts Found) {String} message "User has no chats" 
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ * @apiUse JSONError
+ */ 
 router.get("/getchatid/:email?", (request, response, next) => {
     if (!request.params.email) {
         response.status(400).send({
@@ -304,7 +326,7 @@ router.get("/getchatid/:email?", (request, response, next) => {
             .then(result => {
                 if (result.rowCount == 0) {
                     response.status(400).send({
-                        message: "user has no contact"
+                        message: "user has no chat"
                     })
                 } else {
                     response.send({

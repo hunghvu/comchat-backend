@@ -126,6 +126,24 @@ router.post('/', (req, res, next) => {
 })
 
 
+
+/**
+ * @api {get} /register/verify Request to verify a user
+ * @apiName GetRegister
+ * @apiGroup Register
+ * 
+ * @apiParam {String} email a users email *required unique
+ * @apiParam {Integer} pin a pin number
+ * 
+ * @apiSuccess (Success 200) {boolean} success true when the name is verified
+ * @apiSuccess (Success 200) {String} email the email of the user verified 
+ * 
+ * @apiError (404: Pin number does not match) {String} message "Bad request"
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * @apiError (400: Email not found) {String} message "Email not found"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ */
 router.get('/verify', (request, response, next) => {
     //validate on missing or invalid (type) parameters
     if (!request.query.email || !request.query.pin) {

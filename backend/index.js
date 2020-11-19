@@ -13,9 +13,9 @@ app.use('/register', require('./routes/register.js'))
 
 app.use('/auth', require('./routes/login.js'))
 
-app.use('/weather', require('./routes/weather.js'))
+app.use('/weather', middleware.checkToken, require('./routes/weather.js'))
 
-app.use('/connections', require('./routes/connections.js'))
+app.use('/connections', middleware.checkToken, require('./routes/connections.js'))
 
 app.use('/resetpassword', require('./routes/resetpassword.js'))
 

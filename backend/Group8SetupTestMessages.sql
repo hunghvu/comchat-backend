@@ -7,9 +7,13 @@ DELETE FROM Messages;
 --Remove all chats
 DELETE FROM Chats;
 
+--Remove all contacts
+DELETE FROM Contacts;
+
 --Remove the user test1
 DELETE FROM Members 
 WHERE Email='test1@test.com';
+
 
 --Add the User test1  (password is: test12345)
 INSERT INTO 
@@ -37,7 +41,438 @@ INSERT INTO
 VALUES
     ('test3First', 'test3Last', 'test3', 'test3@test.com', 'aafc93bbad0671a0531fa95168c4691be3a0d5e033c33a7b8be9941d2702e566', '5a3d1d9d0bda1e4855576fe486c3a188e14a3f1a381ea938cacdb8c799a3205f');
 
+--Remove the user test4
+DELETE FROM Members 
+WHERE Email='test4@test.com';
 
+--Add the User test4 (password is: test12345)
+INSERT INTO 
+    Members(FirstName, LastName, Username, Email, Password, Salt)
+VALUES
+    ('test4First', 'test4Last', 'test4', 'test4@test.com', 'aafc93bbad0671a0531fa95168c4691be3a0d5e033c33a7b8be9941d2702e566', '5a3d1d9d0bda1e4855576fe486c3a188e14a3f1a381ea938cacdb8c799a3205f');
+
+--Remove the user test5
+DELETE FROM Members 
+WHERE Email='test5@test.com';
+
+--Add the User test5 (password is: test12345)
+INSERT INTO 
+    Members(FirstName, LastName, Username, Email, Password, Salt)
+VALUES
+    ('test5First', 'test5Last', 'test5', 'test5@test.com', 'aafc93bbad0671a0531fa95168c4691be3a0d5e033c33a7b8be9941d2702e566', '5a3d1d9d0bda1e4855576fe486c3a188e14a3f1a381ea938cacdb8c799a3205f');
+
+--Remove the user test6
+DELETE FROM Members 
+WHERE Email='test6@test.com';
+
+--Add the User test6 (password is: test12345)
+INSERT INTO 
+    Members(FirstName, LastName, Username, Email, Password, Salt)
+VALUES
+    ('test6First', 'test6Last', 'test6', 'test6@test.com', 'aafc93bbad0671a0531fa95168c4691be3a0d5e033c33a7b8be9941d2702e566', '5a3d1d9d0bda1e4855576fe486c3a188e14a3f1a381ea938cacdb8c799a3205f');
+
+--Remove the user test7
+DELETE FROM Members 
+WHERE Email='test7@test.com';
+
+--Add the User test7 (password is: test12345)
+INSERT INTO 
+    Members(FirstName, LastName, Username, Email, Password, Salt)
+VALUES
+    ('test7First', 'test7Last', 'test7', 'test7@test.com', 'aafc93bbad0671a0531fa95168c4691be3a0d5e033c33a7b8be9941d2702e566', '5a3d1d9d0bda1e4855576fe486c3a188e14a3f1a381ea938cacdb8c799a3205f');
+
+--Remove the user test8
+DELETE FROM Members 
+WHERE Email='test8@test.com';
+
+--Add the User test8 (password is: test12345)
+INSERT INTO 
+    Members(FirstName, LastName, Username, Email, Password, Salt)
+VALUES
+    ('test8First', 'test8Last', 'test8', 'test8@test.com', 'aafc93bbad0671a0531fa95168c4691be3a0d5e033c33a7b8be9941d2702e566', '5a3d1d9d0bda1e4855576fe486c3a188e14a3f1a381ea938cacdb8c799a3205f');
+
+--Remove the user test9
+DELETE FROM Members 
+WHERE Email='test9@test.com';
+
+--Add the User test9 (password is: test12345)
+INSERT INTO 
+    Members(FirstName, LastName, Username, Email, Password, Salt)
+VALUES
+    ('test9First', 'test9Last', 'test9', 'test9@test.com', 'aafc93bbad0671a0531fa95168c4691be3a0d5e033c33a7b8be9941d2702e566', '5a3d1d9d0bda1e4855576fe486c3a188e14a3f1a381ea938cacdb8c799a3205f');
+
+--Remove the user test10
+DELETE FROM Members 
+WHERE Email='test10@test.com';
+
+--Add the User test10 (password is: test12345)
+INSERT INTO 
+    Members(FirstName, LastName, Username, Email, Password, Salt)
+VALUES
+    ('test10First', 'test10Last', 'test10', 'test10@test.com', 'aafc93bbad0671a0531fa95168c4691be3a0d5e033c33a7b8be9941d2702e566', '5a3d1d9d0bda1e4855576fe486c3a188e14a3f1a381ea938cacdb8c799a3205f');
+
+-- Create contacts between users
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test3@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test3@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test4@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test4@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test5@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test5@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test6@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test6@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test7@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test7@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test8@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test9@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test10@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test3@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com')
+	);
+
+
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test2@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test4@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test2@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test5@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test2@test.com')
+	);
+
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test6@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test2@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test7@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test2@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test8@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test2@test.com')
+	);
+
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test9@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test2@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test10@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test2@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test3@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test2@test.com')
+	);
+
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test3@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test4@test.com')
+	);	
+
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test3@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test5@test.com')
+	);
+	
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test3@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test6@test.com')
+	);
+
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test3@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test7@test.com')
+	);	
+
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test3@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test8@test.com')
+	);	
+
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test3@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test9@test.com')
+	);	
+
+INSERT INTO
+	Contacts(MemberID_A, MemberID_B)
+VALUES
+	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test3@test.com'),
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test10@test.com')
+	);	
+	
 --Create Global Chat room, ChatId 1
 INSERT INTO
     chats(chatid, name)

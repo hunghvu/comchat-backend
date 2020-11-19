@@ -1,11 +1,16 @@
 {
     "name": "Com Chat",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Com Chat API Documentation",
     "title": "Com Chat API Doc",
     "url" : "http://comchat-backend.herokuapp.com",
     "order": [
       "Register",
-      "Auth"
+      "Auth",
+      "ResetPassword",
+      "Weather",
+      "Connections",
+      "Messages",
+      "Chats"
     ]
   }
