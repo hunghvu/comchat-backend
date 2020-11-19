@@ -73,16 +73,10 @@ router.get("/:email?", (request, response, next) => {
 
     pool.query(query, values)
         .then(result => {
-            if (result.rowCount == 0) {
-                response.status(400).send({
-                    message: "user has no contact"
-                })
-            } else {
-                response.send({
-                    contactCount : result.rowCount,
-                    contacts: result.rows
-                })
-            }
+            response.send({
+                contactCount : result.rowCount,
+                contacts: result.rows
+            })
         }).catch(error => {
             response.status(400).send({
                 message: "SQL Error",
