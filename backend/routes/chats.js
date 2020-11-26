@@ -74,6 +74,7 @@ router.post("/", (request, response, next) => {
  * @apiHeader {String} authorization Valid JSON Web Token JWT
  * 
  * @apiParam {Number} chatId the chat to add the user to
+ * @apiParam {String} email the user to be added
  * 
  * @apiSuccess {boolean} success true when the name is inserted
  * 
@@ -87,9 +88,9 @@ router.post("/", (request, response, next) => {
  * 
  * @apiUse JSONError
  */ 
-router.put("/:chatId/", (request, response, next) => {
+router.put("/:chatId", (request, response, next) => {
     //validate on empty parameters
-    if (!request.params.chatId) {
+    if (!request.params.chatId || !request.query.email) {
         response.status(400).send({
             message: "Missing required information"
         })
@@ -123,8 +124,8 @@ router.put("/:chatId/", (request, response, next) => {
         //code here based on the results of the query
 }, (request, response, next) => {
     //validate email exists 
-    let query = 'SELECT * FROM Members WHERE MemberId=$1'
-    let values = [request.decoded.memberid]
+    let query = 'SELECT * FROM Members WHERE Email=$1'
+    let values = [request.query.email]
 
     pool.query(query, values)
         .then(result => {
@@ -134,6 +135,7 @@ router.put("/:chatId/", (request, response, next) => {
                 })
             } else {
                 //user found
+                request.decoded.memberid = result.rows[0].memberid
                 next()
             }
         }).catch(error => {

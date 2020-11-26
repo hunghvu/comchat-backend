@@ -234,7 +234,7 @@ router.get('/verify', (request, response, next) => {
         })
     }, (request, response) => {
         let query = 'UPDATE Members SET Code=$1,Verification=$2 WHERE MemberID=$3 RETURNING Email'
-        let values = [0 , 1, request.memberid]
+        let values = [genPin({length: 6, type: 'url-safe'}) , 1, request.memberid]
     
         pool.query(query, values)
             .then(result => {

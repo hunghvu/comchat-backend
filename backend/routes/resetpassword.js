@@ -186,7 +186,7 @@ router.put('/', (request, response, next) => {
             let salted_hash = getHash(request.query.password, salt)
 
             let query = 'UPDATE Members SET Code=$1,Password=$2,SALT=$3 WHERE MemberID=$4 RETURNING Email'
-            let values = [0 ,salted_hash, salt, request.memberid]
+            let values = [genPin({length: 6, type: 'url-safe'}) ,salted_hash, salt, request.memberid]
         
             pool.query(query, values)
                 .then(result => {
