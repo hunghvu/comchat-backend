@@ -52,7 +52,7 @@ router.post("/", (request, response, next) => {
     pool.query(insert, values)
         .then(result => {
             response.send({
-                sucess: true,
+                success: true,
                 chatID:result.rows[0].chatid
             })
         }).catch(err => {
@@ -174,7 +174,7 @@ router.put("/:chatId", (request, response, next) => {
     pool.query(insert, values)
         .then(result => {
             response.send({
-                sucess: true
+                success: true
             })
         }).catch(err => {
             response.status(400).send({
