@@ -7,7 +7,7 @@ CREATE TABLE Members (MemberID SERIAL PRIMARY KEY,
                       Password VARCHAR(255) NOT NULL,
                       SALT VARCHAR(255),
                       Verification INT DEFAULT 0,
-                      Code INT DEFAULT 0
+                      Code VARCHAR(255) 
 );
 
 DROP TABLE IF EXISTS Contacts;

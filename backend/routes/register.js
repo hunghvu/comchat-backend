@@ -4,6 +4,8 @@ const express = require('express')
 //We use this create the SHA256 hash
 const crypto = require("crypto")
 
+const genPin = require('crypto-random-string')
+
 //Access the connection to Heroku Database
 let pool = require('../utilities/utils').pool
 
@@ -20,6 +22,13 @@ const { response } = require('express')
 const { Console } = require('console')
 //This allows parsing of the body of POST requests, that are encoded in JSON
 router.use(bodyParser.json())
+
+//Pull in the JWT module along with out asecret key
+let jwt = require('jsonwebtoken')
+let config = {
+    secret: process.env.JSON_WEB_TOKEN
+}
+
 
 /**
  * @api {post} /register Request to resgister a user
@@ -53,10 +62,10 @@ router.post('/', (req, res, next) => {
     //Retrieve data from query params
     var first = req.body.first
     var last = req.body.last
-    var username = req.body.email //username not required for lab. Use email
+    var username = req.body.username 
     var email = req.body.email
     var password = req.body.password
-
+    console.log("Here")
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(first && last && username && email && password) {   
@@ -66,7 +75,6 @@ router.post('/', (req, res, next) => {
                 message: "Invalid password, password must has at least 6 characters and 1 uppercase letter!"
             })
         }
-        
         //We're storing salted hashes to make our application more secure
         //If you're interested as to what that is, and why we should use it
         //watch this youtube video: https://www.youtube.com/watch?v=8ZtInClXe1Q
@@ -76,7 +84,7 @@ router.post('/', (req, res, next) => {
         //We're using placeholders ($1, $2, $3) in the SQL query string to avoid SQL Injection
         //If you want to read more: https://stackoverflow.com/a/8265319
         let theQuery = "INSERT INTO MEMBERS(FirstName, LastName, Username, Email, Password, Salt, Code) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING Email"
-        let rand = Math.floor((Math.random() * 100) + 54)
+        let rand = genPin({length: 4, type: 'numeric'})
         let values = [first, last, username, email, salted_hash, salt, rand]
         pool.query(theQuery, values)
             .then(result => {
@@ -115,7 +123,17 @@ router.post('/', (req, res, next) => {
     pool.query(theQuery, values)
         .then(result => {
             host=req.get('host');
-            let link="http://"+req.get('host')+"/register/verify?email="+req.body.email+"&pin="+result.rows[0].code;
+            let token = jwt.sign(
+                {
+                    "email": req.body.email,
+                    "pin": result.rows[0].code
+                },
+                config.secret,
+                { 
+                    expiresIn: "24h" // expires in 24 hours
+                }
+            )
+            let link="http://"+req.get('host')+"/register/verify?token="+token;
             mailOptions={
                 to : (req.body.email).toLowerCase(),
                 subject : "Please confirm your Com Chat Email account",
@@ -145,6 +163,26 @@ router.post('/', (req, res, next) => {
  * @apiError (400: SQL Error) {String} message the reported SQL error details
  */
 router.get('/verify', (request, response, next) => {
+    //validate token
+    if (!request.query.token) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    } else {
+        jwt.verify(request.query.token, config.secret, (err, decoded) => {
+            if (err) {
+                response.status(403).json({
+                success: false,
+                message: err
+              });
+            } else {  
+              request.query.email = decoded.email;
+              request.query.pin = decoded.pin;
+              next();
+            }
+          })
+    }
+}, (request, response, next) => {
     //validate on missing or invalid (type) parameters
     if (!request.query.email || !request.query.pin) {
         response.status(400).send({

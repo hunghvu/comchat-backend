@@ -27,6 +27,7 @@ var router = express.Router()
  * 
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. Zip code must be a number"
+ * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. Longtitude and Latitdue must be a number"
  * 
  * @apiDescription This end point is a pass through to the Open Weather API. 
  * 
@@ -34,9 +35,15 @@ var router = express.Router()
 router.get("/", (req, res) => {
     //validate chatId is not empty or non-number
     if (!req.query.zip) {
-      res.status(400).send({
-          message: "Missing required information"
-      })
+      if ((!req.query.lat && !req.query.long)) {
+        res.status(400).send({
+            message: "Missing required information"
+        })
+      } else if (isNaN(req.query.lat) || isNaN(req.query.long)) {
+        res.status(400).send({
+            message: "Malformed parameter. Longtitude and Latitdue must be a number"
+        })
+      }
     }  else if (isNaN(req.query.zip)) {
       res.status(400).send({
           message: "Malformed parameter. Zip code must be a number"
@@ -46,9 +53,17 @@ router.get("/", (req, res) => {
     // Process the zip code and add lon and lat param to the url
     var url = 'https://api.openweathermap.org/data/2.5/onecall'
     var query = {lat: '', lon: '',exclude: ['minutely','alerts'], units: 'imperial', appid: app_id};
-    var param = zipcodes.lookup(req.query.zip)
-    query.lat = param.latitude
-    query.lon = param.longitude
+    
+    if (req.query.zip) {
+      var param = zipcodes.lookup(req.query.zip)
+      query.lat = param.latitude
+      query.lon = param.longitude
+    } else {
+      query.lat = req.query.lat
+      query.lon = req.query.long
+      var param = zipcodes.lookupByCoords(query.lat, query.lon)
+    }
+    
 
     //Change query into parameters
     var str = [];
@@ -58,6 +73,7 @@ router.get("/", (req, res) => {
         }
     str = str.join("&");
     url += '?' + str
+    console.log(url)
 
     //When this web service gets a request, make a request to the Phish Web service
     request(url, function (error, response, body) {

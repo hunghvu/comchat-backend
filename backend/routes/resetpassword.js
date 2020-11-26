@@ -4,6 +4,9 @@ const express = require('express')
 //We use this create the SHA256 hash
 const crypto = require("crypto")
 
+//We use this to generate pin digits
+const genPin = require('crypto-random-string')
+
 //Access the connection to Heroku Database
 let pool = require('../utilities/utils').pool
 
@@ -68,7 +71,7 @@ router.get('/:email', (request, response, next) => {
                 })
             })
     }, (request, response) => {
-        let rand = Math.floor((Math.random() * 100) + 54);
+        let rand = genPin({length: 4, type: 'numeric'})
         //Change Code in Members database
         let query = 'UPDATE Members SET Code=$1 WHERE MemberID=$2 RETURNING Code'
         let values = [rand, request.memberid]
