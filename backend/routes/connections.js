@@ -62,19 +62,70 @@ router.get("/:email?", (request, response, next) => {
                 error: error
             })
         })
-}, (request, response) => {
-    //validate email does not already exist in the contact
-    let query = `SELECT Members.Email
+}, (request, response, next) => {
+    let query = `SELECT Members.Email, Members.FirstName, Members.LastName
                 FROM Contacts
                 INNER JOIN Members ON Contacts.MemberId_B=Members.MemberId
-                WHERE MemberID_A=$1`
+                WHERE MemberID_A=$1 AND Verified=1`
+    let values = [request.memberid]
+
+    pool.query(query, values)
+        .then(result => {
+            request.connections = result.rows
+            next()
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+}, (request, response, next) => {
+    let query = `SELECT Members.Email, Members.FirstName, Members.LastName
+                FROM Contacts
+                INNER JOIN Members ON Contacts.MemberId_A=Members.MemberId
+                WHERE MemberID_B=$1 AND Verified=1`
+    let values = [request.memberid]
+
+    pool.query(query, values)
+        .then(result => {
+            request.connections = [...request.connections, ...result.rows]
+            next()
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+}, (request, response, next) => {
+    let query = `SELECT Members.Email, Members.FirstName, Members.LastName
+                FROM Contacts
+                INNER JOIN Members ON Contacts.MemberId_B=Members.MemberId
+                WHERE MemberID_A=$1 AND Verified=0`
+    let values = [request.memberid]
+
+    pool.query(query, values)
+        .then(result => {
+            request.sentRequests = result.rows
+            next()
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+}, (request, response) => {
+    let query = `SELECT Members.Email, Members.FirstName, Members.LastName
+                FROM Contacts
+                INNER JOIN Members ON Contacts.MemberId_A=Members.MemberId
+                WHERE MemberID_B=$1 AND Verified=0`
     let values = [request.memberid]
 
     pool.query(query, values)
         .then(result => {
             response.send({
-                contactCount : result.rowCount,
-                contacts: result.rows
+                contacts: request.connections,
+                sentRequests: request.sentRequests,
+                receivedRequests: result.rows
             })
         }).catch(error => {
             response.status(400).send({
@@ -173,9 +224,15 @@ router.post("/", (request, response, next) => {
     pool.query(query, values)
         .then(result => {
             if (result.rowCount > 0) {
-                response.status(400).send({
-                    message: "contact already exist"
-                })
+                if (result.rows[0].verified == 1){
+                    response.status(400).send({
+                        message: "contact already exist"
+                    })
+                } else {
+                    response.status(400).send({
+                        message: "Request has already been sent"
+                    }) 
+                }   
             } else {
                 next()
             }
@@ -185,23 +242,67 @@ router.post("/", (request, response, next) => {
                 error: error
             })
         }) 
-}, (request, response) => {
-    //Insert the memberId into the chat
-    let insert = `INSERT INTO Contacts(MemberID_A, MemberID_B)
-                  VALUES ($1, $2)
-                  RETURNING *`
+}, (request, response, next) => {
+    //validate contact does not already exist 
+    let query = 'SELECT * FROM Contacts WHERE MemberID_B=$1 AND MemberID_A=$2'
     let values = [request.memberId_A, request.memberId_B]
-    pool.query(insert, values)
+
+    pool.query(query, values)
         .then(result => {
-            response.send({
-                sucess: true
-            })
-        }).catch(err => {
+            if (result.rowCount > 0) {
+                if (result.rows[0].verified == 1){
+                    response.status(400).send({
+                        message: "contact already exist"
+                    })
+                } else {
+                    request.verify = true
+                    next() 
+                }   
+            } else {
+                request.verify = false
+                next()
+            }
+        }).catch(error => {
             response.status(400).send({
                 message: "SQL Error",
-                error: err
+                error: error
             })
-        })
+        }) 
+}, (request, response) => {
+    if (request.verify) {
+        //Verify contact
+        let insert = `Update Contacts SET Verified=1 WHERE MemberID_B=$1 AND MemberID_A=$2`
+        let values = [request.memberId_A, request.memberId_B]
+        pool.query(insert, values)
+            .then(result => {
+                response.send({
+                    message: "Verify connection successfully"
+                })
+            }).catch(err => {
+                response.status(400).send({
+                    message: "SQL Error",
+                    error: err
+                })
+            })
+    } else {
+        //Insert new contact
+        let insert = `INSERT INTO Contacts(MemberID_A, MemberID_B)
+                    VALUES ($1, $2)
+                    RETURNING *`
+        let values = [request.memberId_A, request.memberId_B]
+        pool.query(insert, values)
+            .then(result => {
+                response.send({
+                    sucess: true
+                })
+            }).catch(err => {
+                response.status(400).send({
+                    message: "SQL Error",
+                    error: err
+                })
+            })
+    }
+    
 })
 
 
@@ -306,10 +407,11 @@ router.delete("/", (request, response, next) => {
             })
         }) 
 }, (request, response) => {
-    //Insert the memberId into the chat
+    //Delete the memberId from Connections
     let insert = `DELETE FROM Contacts 
-                  WHERE MemberID_A=$1 
-                  AND MemberID_B=$2
+                  WHERE (MemberID_A=$1 
+                  AND MemberID_B=$2) AND (MemberID_B=$1 
+                    AND MemberID_A=$2)
                   RETURNING *`
     let values = [request.memberId_A, request.memberId_B]
     pool.query(insert, values)
