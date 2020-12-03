@@ -147,11 +147,13 @@ router.get("/:email?", (request, response, next) => {
  * @apiParam {String} email_B email contact to be added to email_A
  * 
  * @apiSuccess (Success 201) {boolean} success true when the contact is inserted
+ * @apiSuccess (Success 201) {boolean} message "Verify connection successfully"
  * 
  * @apiError (400: Email Not Found) {String} message "Email Not Found"
  * @apiError (400: Email Not Verified) {String} message "Email has not been verified"
  * @apiError (400: Contact Existed) {String} message "Contact already exist" 
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * @apiError (400: Missing Parameters) {String} message "Request has already been sent"
  * 
  * @apiUse JSONError
  */ 
