@@ -258,12 +258,11 @@ router.post("/", (request, response, next) => {
                     })
                 } else {
                     request.verify = true
-                    next() 
                 }   
             } else {
                 request.verify = false
-                next()
             }
+            next()
         }).catch(error => {
             response.status(400).send({
                 message: "SQL Error",
