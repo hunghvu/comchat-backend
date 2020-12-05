@@ -129,7 +129,7 @@ router.post('/', (req, res, next) => {
                 },
                 config.secret,
                 { 
-                    expiresIn: 1 // expires in 24 hours
+                    expiresIn: "24h" // expires in 24 hours
                 }
             )
             let link="http://"+req.get('host')+"/register/verify?token="+token;
