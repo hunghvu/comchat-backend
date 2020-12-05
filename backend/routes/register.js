@@ -65,7 +65,6 @@ router.post('/', (req, res, next) => {
     var username = req.body.username 
     var email = req.body.email
     var password = req.body.password
-    console.log("Here")
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(first && last && username && email && password) {   
@@ -130,7 +129,7 @@ router.post('/', (req, res, next) => {
                 },
                 config.secret,
                 { 
-                    expiresIn: "24h" // expires in 24 hours
+                    expiresIn: 1 // expires in 24 hours
                 }
             )
             let link="http://"+req.get('host')+"/register/verify?token="+token;
@@ -171,10 +170,26 @@ router.get('/verify', (request, response, next) => {
     } else {
         jwt.verify(request.query.token, config.secret, (err, decoded) => {
             if (err) {
+                if (err.name == 'TokenExpiredError') {
+                    const payload = jwt.verify(request.query.token, config.secret, {ignoreExpiration: true} );
+                    //Delete email when expired
+                    let query = 'DELETE FROM Members WHERE Email=$1'
+                    let values = [payload.email]
+                    pool.query(query, values)
+                        .then(result => {
+                            console.log("Expired email has been deleted")
+                        }).catch(error => {
+                            response.status(400).send({
+                                message: "SQL Error",
+                                error: error
+                            })
+                        })     
+                } 
+
                 response.status(403).json({
-                success: false,
-                message: err
-              });
+                    success: false,
+                    message: err
+                  })
             } else {  
               request.query.email = decoded.email;
               request.query.pin = decoded.pin;

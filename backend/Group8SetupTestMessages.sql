@@ -113,7 +113,7 @@ VALUES
 
 -- Create contacts between users
 INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
+	Contacts(MemberID_A, MemberID_B, Verified)
 VALUES
 	(
 	(SELECT Members.MemberId
@@ -121,83 +121,51 @@ VALUES
 		WHERE Members.Email='test1@test.com'),
 	(SELECT Members.MemberId
 		FROM Members
-		WHERE Members.Email='test3@test.com')
+		WHERE Members.Email='test2@test.com'),
+	1
 	);
 	
 INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
+	Contacts(MemberID_A, MemberID_B, Verified)
 VALUES
 	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com'),
 	(SELECT Members.MemberId
 		FROM Members
 		WHERE Members.Email='test3@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test1@test.com')
+	1
 	);
 	
 INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
+	Contacts(MemberID_A, MemberID_B, Verified)
 VALUES
 	(
 	(SELECT Members.MemberId
 		FROM Members
 		WHERE Members.Email='test1@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test4@test.com')
-	);
-	
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
 	(SELECT Members.MemberId
 		FROM Members
 		WHERE Members.Email='test4@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test1@test.com')
+	0
 	);
 	
 INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
+	Contacts(MemberID_A, MemberID_B, Verified)
 VALUES
 	(
 	(SELECT Members.MemberId
 		FROM Members
 		WHERE Members.Email='test1@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test5@test.com')
-	);
-	
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
 	(SELECT Members.MemberId
 		FROM Members
 		WHERE Members.Email='test5@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test1@test.com')
+	0
 	);
 	
 INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test1@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test6@test.com')
-	);
-	
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
+	Contacts(MemberID_A, MemberID_B, Verified)
 VALUES
 	(
 	(SELECT Members.MemberId
@@ -205,23 +173,12 @@ VALUES
 		WHERE Members.Email='test6@test.com'),
 	(SELECT Members.MemberId
 		FROM Members
-		WHERE Members.Email='test1@test.com')
-	);
-	
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
 		WHERE Members.Email='test1@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test7@test.com')
+	0
 	);
 	
 INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
+	Contacts(MemberID_A, MemberID_B, Verified)
 VALUES
 	(
 	(SELECT Members.MemberId
@@ -229,120 +186,12 @@ VALUES
 		WHERE Members.Email='test7@test.com'),
 	(SELECT Members.MemberId
 		FROM Members
-		WHERE Members.Email='test1@test.com')
-	);
-	
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
 		WHERE Members.Email='test1@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test8@test.com')
+	0
 	);
 	
 INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test1@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test9@test.com')
-	);
-	
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test1@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test10@test.com')
-	);
-	
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test3@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test1@test.com')
-	);
-
-
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test1@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test2@test.com')
-	);
-	
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test4@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test2@test.com')
-	);
-	
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test5@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test2@test.com')
-	);
-
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test6@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test2@test.com')
-	);
-	
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test7@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test2@test.com')
-	);
-	
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
+	Contacts(MemberID_A, MemberID_B, Verified)
 VALUES
 	(
 	(SELECT Members.MemberId
@@ -350,11 +199,12 @@ VALUES
 		WHERE Members.Email='test8@test.com'),
 	(SELECT Members.MemberId
 		FROM Members
-		WHERE Members.Email='test2@test.com')
+		WHERE Members.Email='test1@test.com'),
+	0
 	);
-
+	
 INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
+	Contacts(MemberID_A, MemberID_B, Verified)
 VALUES
 	(
 	(SELECT Members.MemberId
@@ -362,116 +212,22 @@ VALUES
 		WHERE Members.Email='test9@test.com'),
 	(SELECT Members.MemberId
 		FROM Members
-		WHERE Members.Email='test2@test.com')
+		WHERE Members.Email='test1@test.com'),
+	0
 	);
 	
 INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
+	Contacts(MemberID_A, MemberID_B, Verified)
 VALUES
 	(
+	(SELECT Members.MemberId
+		FROM Members
+		WHERE Members.Email='test1@test.com'),
 	(SELECT Members.MemberId
 		FROM Members
 		WHERE Members.Email='test10@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test2@test.com')
+	0
 	);
-	
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test3@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test2@test.com')
-	);
-
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test3@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test4@test.com')
-	);	
-
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test3@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test5@test.com')
-	);
-	
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test3@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test6@test.com')
-	);
-
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test3@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test7@test.com')
-	);	
-
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test3@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test8@test.com')
-	);	
-
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test3@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test9@test.com')
-	);	
-
-INSERT INTO
-	Contacts(MemberID_A, MemberID_B)
-VALUES
-	(
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test3@test.com'),
-	(SELECT Members.MemberId
-		FROM Members
-		WHERE Members.Email='test10@test.com')
-	);	
 	
 --Create Global Chat room, ChatId 1
 INSERT INTO
