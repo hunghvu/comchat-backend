@@ -411,9 +411,8 @@ router.delete("/", (request, response, next) => {
     //Delete the memberId from Connections
     let insert = `DELETE FROM Contacts 
                   WHERE (MemberID_A=$1 
-                  AND MemberID_B=$2) AND (MemberID_B=$1 
-                    AND MemberID_A=$2)
-                  RETURNING *`
+                  AND MemberID_B=$2) OR (MemberID_B=$1 
+                    AND MemberID_A=$2)`
     let values = [request.memberId_A, request.memberId_B]
     pool.query(insert, values)
         .then(result => {
