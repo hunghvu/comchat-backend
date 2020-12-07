@@ -309,7 +309,7 @@ router.post("/", (request, response, next) => {
 
 
 /**
- * @api {delete} /connections? Request to delete a contact from an email
+ * @api {delete} /connections/delete? Request to delete a contact from an email
  * @apiName DeleteConnections
  * @apiGroup Connections
  * 
@@ -326,7 +326,7 @@ router.post("/", (request, response, next) => {
  * 
  * @apiUse JSONError
  */ 
-router.delete("/", (request, response, next) => {
+router.post("/delete", (request, response, next) => {
     if (!request.body.email_A || !request.body.email_B) {
         response.status(400).send({
             message: "Missing required information"
