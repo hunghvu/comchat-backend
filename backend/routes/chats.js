@@ -318,9 +318,10 @@ router.get("/getchatid/:email?", (request, response, next) => {
                 })
             })
     }, (request, response) => {
-        let query = `SELECT Messages.chatid, message, to_char(Messages.timestamp AT TIME ZONE 'PDT', 'YYYY-MM-DD HH24:MI:SS.US' ) AS Timestamp
+        let query = `SELECT Chats.name, Messages.chatid, message, to_char(Messages.timestamp AT TIME ZONE 'PDT', 'YYYY-MM-DD HH24:MI:SS.US' ) AS Timestamp
                     FROM Messages
                     INNER JOIN ChatMembers ON ChatMembers.chatid = Messages.chatid
+                    INNER JOIN Chats ON Chats.chatid = Messages.chatid
                     WHERE ChatMembers.memberid=$1 AND Timestamp=(SELECT MAX(Timestamp) FROM Messages WHERE ChatMembers.chatid = Messages.chatid)`
         let values = [request.memberid]
     
