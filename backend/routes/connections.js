@@ -136,6 +136,81 @@ router.get("/:email?", (request, response, next) => {
 })
 
 
+/**
+ * @api {get} /connections/stranger/:email? Request to get people not in contacts of an email
+ * @apiName GetConnections
+ * @apiGroup Connections
+ * 
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * 
+ * @apiParam {String} email to look up email not in contacts. 
+ * 
+ * @apiSuccess {Number} contactCount the number of stranger returned
+ * @apiSuccess {Object[]} members List of stranger of a user
+ * @apiSuccess {String} messages.contacts The strangers of a user
+ * 
+ * @apiError (400: Email Not Found) {String} message "Email Not Found"
+ * @apiError (400: Email Not Verified) {String} message "Email has not been verified"
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ * @apiUse JSONError
+ */ 
+router.get("/stranger/:email?", (request, response, next) => {
+    if (!request.params.email) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    } else {
+        request.params.email = (request.params.email).toLowerCase()
+        next()
+    }
+}, (request, response, next) => {
+    //validate email exists 
+    let query = 'SELECT MemberID, Verification FROM Members WHERE Email=$1'
+    let values = [request.params.email]
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "email not found"
+                })
+            } else if (result.rows[0].verification == 0) {
+                response.status(404).send({
+                    message: "email has not been verified"
+                })
+            } else {
+                //user found
+                request.memberid = result.rows[0].memberid
+                next()
+            }
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+}, (request, response) => {
+    let query = `SELECT Email, FirstName, LastName
+                FROM Members
+                WHERE MemberID<>$1 AND Verification=1 AND MemberID NOT IN (SELECT MemberID_A FROM Contacts WHERE MemberID_B=$1)
+                AND MemberID NOT IN (SELECT MemberID_B FROM Contacts WHERE MemberID_A=$1)`
+    let values = [request.memberid]
+
+    pool.query(query, values)
+        .then(result => {
+            response.send({
+                strangers: result.rows
+            })
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+})
+
 
 /**
  * @api {post} /connections Request to add a contact to an email

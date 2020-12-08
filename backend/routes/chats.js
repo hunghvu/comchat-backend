@@ -318,17 +318,17 @@ router.get("/getchatid/:email?", (request, response, next) => {
                 })
             })
     }, (request, response) => {
-        //validate email does not already exist in the contact
-        let query = `SELECT ChatID
-                    FROM ChatMembers
-                    WHERE MemberID=$1`
+        let query = `SELECT Messages.chatid, message, to_char(Messages.timestamp AT TIME ZONE 'PDT', 'YYYY-MM-DD HH24:MI:SS.US' ) AS Timestamp
+                    FROM Messages
+                    INNER JOIN ChatMembers ON ChatMembers.chatid = Messages.chatid
+                    WHERE ChatMembers.memberid=$1 AND Timestamp=(SELECT MAX(Timestamp) FROM Messages WHERE ChatMembers.chatid = Messages.chatid)`
         let values = [request.memberid]
     
         pool.query(query, values)
             .then(result => {
                 response.send({
-                    contactCount : result.rowCount,
-                    contacts: result.rows
+                    chatCount : result.rowCount,
+                    chats: result.rows
                 })
             }).catch(error => {
                 response.status(400).send({
