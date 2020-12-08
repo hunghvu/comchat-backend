@@ -64,6 +64,154 @@ router.post("/", (request, response, next) => {
         })
 })
 
+
+/**
+ * @apiDefine JSONError
+ * @apiError (400: JSON Error) {String} message "malformed JSON in parameters"
+ */ 
+
+/**
+ * @api {post} /chats Request to add a direct chat
+ * @apiName PostChats
+ * @apiGroup Chats
+ * 
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * @apiParam {String} name the name for the chat
+ * 
+ * @apiSuccess (Success 201) {boolean} success true when the name is inserted
+ * @apiSuccess (Success 201) {Number} chatId the generated chatId
+ * 
+ * @apiError (400: Unknown user) {String} message "unknown email address"
+ * 
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ * @apiError (400: Unknow Chat ID) {String} message "invalid chat id"
+ * @apiError (400: Email Not Found) {String} message "Email Not Found"
+ * @apiError (400: Email Not Verified) {String} message "Email has not been verified"
+ * @apiError (400: Contact Not Found) {String} message "Contact does not exist" 
+ * 
+ * @apiUse JSONError
+ */ 
+router.post("/direct", (request, response, next) => {
+    if (!request.body.name || !request.body.email_A || !request.body.email_B) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    } else {
+        next()
+    }
+}, (request, response, next) => {
+    //validate first email exists 
+    let query = 'SELECT MemberID, Verification FROM Members WHERE Email=$1'
+    let values = [request.body.email_A]
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "email not found"
+                })
+            } else if (result.rows[0].verification == 0) {
+                response.status(404).send({
+                    message: "email has not been verified"
+                })
+            } else {
+                //user found
+                request.memberId_A = result.rows[0].memberid
+                next()
+            }
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+}, (request, response, next) => {
+    //validate second email exists 
+    let query = 'SELECT MemberID, Verification FROM Members WHERE Email=$1'
+    let values = [request.body.email_B]
+
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "email not found"
+                })
+            } else if (result.rows[0].verification == 0) {
+                response.status(404).send({
+                    message: "email has not been verified"
+                })
+            } else {
+                //user found
+                request.memberId_B = result.rows[0].memberid
+                next()
+            }
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+}, (request, response, next) => {
+    //validate contact does not already exist 
+    let query = 'SELECT * FROM Contacts WHERE (MemberID_A=$1 AND MemberID_B=$2) OR (MemberID_B=$1 AND MemberID_A=$2)'
+    let values = [request.memberId_A, request.memberId_B]
+
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                response.status(400).send({
+                    message: "contact does not exist"
+                })
+            } else {
+                next()
+            }
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        }) 
+}, (request, response, next) => {
+    //Create new direct chat
+    let insert = `INSERT INTO Chats(Name,Direct)
+                  VALUES ($1,1)
+                  RETURNING ChatId`
+    let values = [request.body.name]
+    pool.query(insert, values)
+        .then(result => {
+            request.chatid = result.rows[0].chatid
+            next()
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
+
+        })
+}, (request, response) => {
+    //Insert 2 members into the chat
+    let insert = `INSERT INTO ChatMembers(ChatId, MemberId)
+                  VALUES ($1, $2), ($1, $3)
+                  RETURNING *`
+    let values = [request.chatid, request.memberId_A, request.memberId_B]
+    pool.query(insert, values)
+        .then(result => {
+            response.send({
+                success: true,
+                chatID: request.chatid
+            })
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
+        })
+    }
+)
+
+
 /**
  * @api {put} /chats/:chatId? Request add a user to a chat
  * @apiName PutChats
@@ -80,7 +228,8 @@ router.post("/", (request, response, next) => {
  * 
  * @apiError (404: Chat Not Found) {String} message "chatID not found"
  * @apiError (404: Email Not Found) {String} message "email not found"
- * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. chatId must be a number" 
+ * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. chatId must be a number"
+ * @apiError (400: Illegal add member request) {String} message "Cannot add more member to a direct chat" 
  * @apiError (400: Duplicate Email) {String} message "user already joined"
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * 
@@ -113,7 +262,13 @@ router.put("/:chatId", (request, response, next) => {
                     message: "Chat ID not found"
                 })
             } else {
-                next()
+                if (result.rows[0].direct == 1) {
+                    response.status(400).send({
+                        message: "Cannot add more member to a direct chat"
+                    }) 
+                } else {
+                    next()
+                }   
             }
         }).catch(error => {
             response.status(400).send({
