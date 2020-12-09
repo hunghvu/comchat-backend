@@ -326,18 +326,18 @@ router.post("/", (request, response, next) => {
 
     pool.query(query, values)
         .then(result => {
-            if (result.rowCount > 0) {
-                if (result.rows[0].verified == 1){
-                    response.status(400).send({
-                        message: "contact already exist"
-                    })
+            if (result.rowCount > 0 && result.rows[0].verified == 1) {
+                response.status(400).send({
+                    message: "contact already exist"
+                })
+            } else {
+                if (result.rowCount == 0) {
+                    request.verify = false
                 } else {
                     request.verify = true
-                }   
-            } else {
-                request.verify = false
-            }
-            next()
+                }
+                next()
+            } 
         }).catch(error => {
             response.status(400).send({
                 message: "SQL Error",
