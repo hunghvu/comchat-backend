@@ -509,6 +509,7 @@ router.get("/getchatid/:email?", (request, response, next) => {
  * @apiSuccess {boolean} success true when the name is deleted
  * 
  * @apiError (404: Chat Not Found) {String} message "chatID not found"
+ * @apiError (400: Illegal add member request) {String} message "Cannot delete a member from a direct chat"
  * @apiError (404: Email Not Found) {String} message "email not found"
  * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. chatId must be a number" 
  * @apiError (400: Duplicate Email) {String} message "user not in chat"
@@ -543,7 +544,13 @@ router.delete("/:chatId/:email", (request, response, next) => {
                     message: "Chat ID not found"
                 })
             } else {
-                next()
+                if (result.rows[0].direct == 1) {
+                    response.status(400).send({
+                        message: "Cannot delete a member from a direct chat"
+                    }) 
+                } else {
+                    next()
+                }   
             }
         }).catch(error => {
             response.status(400).send({
