@@ -63,7 +63,7 @@ router.get("/:email?", (request, response, next) => {
             })
         })
 }, (request, response, next) => {
-    let query = `SELECT Members.Email, Members.FirstName, Members.LastName
+    let query = `SELECT Members.Email, Members.FirstName, Members.LastName, Members.UserName
                 FROM Contacts
                 INNER JOIN Members ON Contacts.MemberId_B=Members.MemberId
                 WHERE MemberID_A=$1 AND Verified=1`
@@ -80,7 +80,7 @@ router.get("/:email?", (request, response, next) => {
             })
         })
 }, (request, response, next) => {
-    let query = `SELECT Members.Email, Members.FirstName, Members.LastName
+    let query = `SELECT Members.Email, Members.FirstName, Members.LastName, Members.UserName
                 FROM Contacts
                 INNER JOIN Members ON Contacts.MemberId_A=Members.MemberId
                 WHERE MemberID_B=$1 AND Verified=1`
@@ -97,7 +97,7 @@ router.get("/:email?", (request, response, next) => {
             })
         })
 }, (request, response, next) => {
-    let query = `SELECT Members.Email, Members.FirstName, Members.LastName
+    let query = `SELECT Members.Email, Members.FirstName, Members.LastName, Members.UserName
                 FROM Contacts
                 INNER JOIN Members ON Contacts.MemberId_B=Members.MemberId
                 WHERE MemberID_A=$1 AND Verified=0`
@@ -114,7 +114,7 @@ router.get("/:email?", (request, response, next) => {
             })
         })
 }, (request, response) => {
-    let query = `SELECT Members.Email, Members.FirstName, Members.LastName
+    let query = `SELECT Members.Email, Members.FirstName, Members.LastName, Members.Username
                 FROM Contacts
                 INNER JOIN Members ON Contacts.MemberId_A=Members.MemberId
                 WHERE MemberID_B=$1 AND Verified=0`
@@ -192,7 +192,7 @@ router.get("/stranger/:email?", (request, response, next) => {
             })
         })
 }, (request, response) => {
-    let query = `SELECT Email, FirstName, LastName
+    let query = `SELECT Email, FirstName, LastName, Username
                 FROM Members
                 WHERE MemberID<>$1 AND Verification=1 AND MemberID NOT IN (SELECT MemberID_A FROM Contacts WHERE MemberID_B=$1)
                 AND MemberID NOT IN (SELECT MemberID_B FROM Contacts WHERE MemberID_A=$1)`
