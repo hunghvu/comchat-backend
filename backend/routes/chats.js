@@ -224,7 +224,7 @@ router.post("/direct", (request, response, next) => {
  * @apiParam {Number} chatId the chat to add the user to
  * @apiParam {String} email the user to be added
  * 
- * @apiSuccess {boolean} success true when the name is inserted
+ * @apiSuccess {boolean} success true when the user is inserted
  * 
  * @apiError (404: Chat Not Found) {String} message "chatID not found"
  * @apiError (404: Email Not Found) {String} message "email not found"
@@ -350,8 +350,7 @@ router.put("/:chatId", (request, response, next) => {
  * @apiParam {Number} chatId the chat to look up. 
  * 
  * @apiSuccess {Number} rowCount the number of messages returned
- * @apiSuccess {Object[]} members List of members in the chat
- * @apiSuccess {String} messages.email The email for the member in the chat
+ * @apiSuccess {Object[]} rows List of members in the chat
  * 
  * @apiError (404: ChatId Not Found) {String} message "Chat ID Not Found"
  * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. chatId must be a number" 
@@ -625,7 +624,7 @@ router.delete("/:chatId/:email", (request, response, next) => {
 
 
 /**
- * @api {delete} /chats/:chatId?/:email? Request delete a user from a chat
+ * @api {delete} /chats/:chatId?/ Request delete a chat
  * @apiName DeleteChats
  * @apiGroup Chats
  * 
@@ -633,15 +632,10 @@ router.delete("/:chatId/:email", (request, response, next) => {
  * instead delelets the user based on the email parameter.  
  * 
  * @apiParam {Number} chatId the chat to delete the user from
- * @apiParam {String} email the email of the user to delete
  * 
- * @apiSuccess {boolean} success true when the name is deleted
+ * @apiSuccess {boolean} success true when the chat is deleted
  * 
  * @apiError (404: Chat Not Found) {String} message "chatID not found"
- * @apiError (400: Illegal add member request) {String} message "Cannot delete a member from a direct chat"
- * @apiError (404: Email Not Found) {String} message "email not found"
- * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. chatId must be a number" 
- * @apiError (400: Duplicate Email) {String} message "user not in chat"
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * 
  * @apiError (400: SQL Error) {String} message the reported SQL error details
