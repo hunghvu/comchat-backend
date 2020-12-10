@@ -473,7 +473,7 @@ router.get("/getchatid/:email?", (request, response, next) => {
                 })
             })
     }, (request, response) => {
-        let query = `SELECT Chats.name, ChatMembers.chatid, coalesce(Messages.message, '') AS message, coalesce(to_char(Messages.timestamp AT TIME ZONE 'PDT', 'YYYY-MM-DD HH24:MI:SS.US' ), '') AS Timestamp
+        let query = `SELECT Chats.name, Chats.direct, ChatMembers.chatid, coalesce(Messages.message, '') AS message, coalesce(to_char(Messages.timestamp AT TIME ZONE 'PDT', 'YYYY-MM-DD HH24:MI:SS.US' ), '') AS Timestamp
         FROM ChatMembers
         LEFT JOIN Chats ON ChatMembers.chatid = Chats.chatid
         LEFT JOIN Messages ON ChatMembers.chatid = Messages.chatid
