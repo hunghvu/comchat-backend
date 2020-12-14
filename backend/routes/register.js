@@ -54,20 +54,19 @@ let config = {
  * @apiError (400: SQL Error) {String} message the reported SQL error details
  */ 
 router.post('/', (req, res, next) => {
-    res.type("application/json")
-    //Change email to lower case
-    req.body.email = (req.body.email).toLowerCase()
-
+    console.log('Here')
     if (!req.body.first || !req.body.last || !req.body.username || !req.body.email || !req.body.password) {
         response.status(400).send({
             message: "Missing required information"
         })
     } else {
+        //Change email to lower case
+        req.body.email = (req.body.email).toLowerCase()
         next()
     }
 }, (req, res, next) => {
     //Check if password >= 6 char, has at least 1 uppercase letter A-Z
-    if (checkPassword(password) == false) {
+    if (checkPassword(req.body.password) == false) {
         res.status(400).send({
             message: "Invalid password, password must has at least 6 characters!"
         })
@@ -75,6 +74,7 @@ router.post('/', (req, res, next) => {
         next()
     }
 }, (req, res, next) => {
+    res.type("application/json")
     //Retrieve data from query params
     let first = req.body.first
     let last = req.body.last
