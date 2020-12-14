@@ -55,26 +55,34 @@ let config = {
  */ 
 router.post('/', (req, res, next) => {
     res.type("application/json")
-
     //Change email to lower case
     req.body.email = (req.body.email).toLowerCase()
 
+    if (!req.body.first || !req.body.last || !req.body.username || !req.body.email || !req.body.password) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    } else {
+        next()
+    }
+}, (req, res, next) => {
+    //Check if password >= 6 char, has at least 1 uppercase letter A-Z
+    if (checkPassword(password) == false) {
+        res.status(400).send({
+            message: "Invalid password, password must has at least 6 characters!"
+        })
+    } else {
+        next()
+    }
+}, (req, res, next) => {
     //Retrieve data from query params
-    var first = req.body.first
-    var last = req.body.last
-    var username = req.body.username 
-    var email = req.body.email
-    var password = req.body.password
-    //Verify that the caller supplied all the parameters
-    //In js, empty strings or null values evaluate to false
-    if(first && last && username && email && password) {   
-        //Check if password >= 6 char, has at least 1 uppercase letter A-Z
-        if (!checkPassword(password)) {
-            res.status(400).send({
-                message: "Invalid password, password must has at least 6 characters and 1 uppercase letter!"
-            })
-        }
-        //We're storing salted hashes to make our application more secure
+    let first = req.body.first
+    let last = req.body.last
+    let username = req.body.username 
+    let email = req.body.email
+    let password = req.body.password
+        
+    //We're storing salted hashes to make our application more secure
         //If you're interested as to what that is, and why we should use it
         //watch this youtube video: https://www.youtube.com/watch?v=8ZtInClXe1Q
         let salt = crypto.randomBytes(32).toString("hex")
@@ -110,12 +118,7 @@ router.post('/', (req, res, next) => {
                         message: err.detail
                     })
                 }
-            })
-    } else {
-        response.status(400).send({
-            message: "Missing required information"
-        })
-    }
+            })    
 }, (req, res) => {
     let theQuery = "SELECT Code FROM Members WHERE Email=$1"
     let values = [req.body.email]

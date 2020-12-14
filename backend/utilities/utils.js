@@ -18,12 +18,7 @@ var transporter = nodemailer.createTransport({
 
 // A function to check whether the password is valid
 function checkPassword(password) {
-    var result = false;
-    for (i = 0; i < password.length; i++) {
-        result = (password.charAt(i)==password.charAt(i).toUpperCase());
-        if (result) break;
-    }
-    return (password.length >= 6) && result;
+  return (password.length >= 6);
 }
 
 // A function to return date object with unix timestamp
